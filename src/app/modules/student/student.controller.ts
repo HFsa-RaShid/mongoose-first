@@ -30,19 +30,20 @@ const createStudent = async (req: Request, res: Response) => {
 
    
 
-    // send response
-    res.status(200).json({
-      success: true,
-      message: 'Student is created successfully',
-      data: result,
-    })
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: 'Something went wrong',
-      error: err,
-    })
-  }
+      // Success Response
+      res.status(200).json({
+        success: true,
+        message: 'Student is created successfully',
+        data: result,
+      });
+    } catch (err: any) {
+      console.error("Error during student creation:", err.message); 
+      res.status(500).json({
+        success: false,
+        message: err.message || 'Something went wrong',
+        error: err,
+      });
+    }
 }
 
 const getAllStudents = async (req: Request, res: Response) => {
