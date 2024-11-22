@@ -46,6 +46,7 @@ const createStudent = async (req: Request, res: Response) => {
     }
 }
 
+// get all student
 const getAllStudents = async (req: Request, res: Response) => {
   try {
     const result = await StudentServices.getAllStudentsFromDB()
@@ -54,10 +55,17 @@ const getAllStudents = async (req: Request, res: Response) => {
       message: 'Students are retrieved successfully',
       data: result,
     })
-  } catch (err) {
-    console.log(err)
+  } catch (err: any) {
+    console.error("Error during student creation:", err.message); 
+    res.status(500).json({
+      success: false,
+      message: err.message || 'Something went wrong',
+      error: err,
+    });
   }
 }
+
+// get single student
 const getSingleStudent = async (req: Request, res: Response) => {
   try {
     const { studentId } = req.params
@@ -69,8 +77,35 @@ const getSingleStudent = async (req: Request, res: Response) => {
       message: 'Student is retrieved successfully',
       data: result,
     })
-  } catch (err) {
-    console.log(err)
+  } catch (err: any) {
+    console.error("Error during student creation:", err.message); 
+    res.status(500).json({
+      success: false,
+      message: err.message || 'Something went wrong',
+      error: err,
+    });
+  }
+}
+
+// delete
+const deleteStudent = async (req: Request, res: Response) => {
+  try {
+    const { studentId } = req.params
+    // console.log('Requested studentId:', studentId);
+    const result = await StudentServices.deleteStudentFromDB(studentId)
+    // console.log('Database query result:', result);
+    res.status(200).json({
+      success: true,
+      message: 'Student is deleted successfully',
+      data: result,
+    })
+  } catch (err: any) {
+    console.error("Error during student creation:", err.message); 
+    res.status(500).json({
+      success: false,
+      message: err.message || 'Something went wrong',
+      error: err,
+    });
   }
 }
 
@@ -78,4 +113,5 @@ export const StudentControllers = {
   createStudent,
   getAllStudents,
   getSingleStudent,
+  deleteStudent,
 }

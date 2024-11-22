@@ -37,6 +37,7 @@ const localGuardianSchema = z.object({
 // Student Schema
 const studentSchema = z.object({
     id: z.string().trim().min(1, 'Student ID is required'),
+    password: z.string().trim().min(6, 'Password is required').max(20, 'Password is required'),
     name: userNameSchema,
     gender: z.enum(['male', 'female', 'other']),
     dateOfBirth: z.string().default(''), // Providing a default value (empty string in this case)
@@ -56,6 +57,7 @@ const studentSchema = z.object({
     localGuardian: localGuardianSchema,
     profileImg: z.string().optional(),
     isActive: z.enum(['active', 'inactive']),
+    isDeleted: z.boolean().default(false),
   });
   
 

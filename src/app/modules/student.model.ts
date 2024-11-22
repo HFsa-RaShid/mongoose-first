@@ -8,6 +8,8 @@ import {
   TStudent,
   TUserName,
 } from './student/student.interface'
+import bcrypt from 'bcrypt'
+import config from '../config'
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -97,6 +99,12 @@ const studentSchema = new Schema<TStudent, StudentModel>({
     required: [true, 'Student ID is required'],
     unique: true,
   },
+  password: {
+    type: String,
+    required: [true, 'Password ID is required'],
+    minlength: [6, 'Password can not be less than 6 char'],
+    maxlength: [20, 'Password can not be more than 20 char'],
+  },
   name: {
     type: userNameSchema,
     required: [true, 'Name is required'],
@@ -159,14 +167,52 @@ const studentSchema = new Schema<TStudent, StudentModel>({
     },
     required: [true, 'Active status is required'],
   },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  }
+})
+
+// pre save middleware/hook : will work on create(), save()
+studentSchema.pre('save', async function (next) {
+  // console.log(this, 'pre hook : we will save the data');
+  const user = this
+  // hashing password and save into  DB
+  user.password= await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_round),
+  );
+  next();
+});
+
+// post save middleware/hook
+studentSchema.post('save', function (doc, next) {
+  doc.password = '',
+  next()
+})
+
+// query middleware
+studentSchema.pre('find', function(next){
+  this.find({isDeleted: {$ne: true}})
+  next();
+})
+
+studentSchema.pre('findOne', function(next){
+  this.find({isDeleted: {$ne: true}})
+  next();
+})
+
+studentSchema.pre('aggregate', function(next){
+  this.pipeline().unshift({$match: {isDeleted : {$ne: true}}});
+  next();
 })
 
 // creating a custom static method
 studentSchema.statics.isUserExists = async function (id: string) {
   const existingUser = await Student.findOne({ id })
-  console.log('User exists:', existingUser);
-  return existingUser;
-};
+  // console.log('User exists:', existingUser);
+  return existingUser
+}
 
 // creating a custom instance method
 // studentSchema.methods.isUserExists = async function(id: string){
