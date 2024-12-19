@@ -27,3 +27,6 @@ ts-node-dev --respawn --transpile-only src/server.ts
 
 npm install zod
 ```
+
+[Requirement Analysis](https://docs.google.com/document/d/10mkjS8boCQzW4xpsESyzwCCLJcM3hvLghyD_TeXPBx0/edit?tab=t.0)
+
